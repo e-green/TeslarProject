@@ -8,15 +8,15 @@ package com.egreen.tesla.server.api.config.resolver;
 import com.egreen.tesla.server.api.component.Component;
 import com.egreen.tesla.widget.api.config.Controller;
 import com.egreen.tesla.widget.api.config.RequestMapping;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Map;
+import javassist.CannotCompileException;
+import javassist.ClassPool;
+import javassist.CtClass;
+import javassist.CtMethod;
+import javassist.NotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -24,61 +24,69 @@ import org.apache.logging.log4j.Logger;
  *
  * @author dewmal
  */
-public class ControllerResolver {
+public class ControllerResolver implements TemplateResolver {
 
     private static final Logger LOGGER = LogManager.getLogger(ControllerResolver.class);
 
-    private final Map<String, Method> map = new Hashtable<String, Method>();
+    private final Map<String, RequestResolver> map = new Hashtable<String, RequestResolver>();
 
-    public void loadClassFromComponent(Component component) throws NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, ClassNotFoundException, InstantiationException {
+    private Component component;
+
+    public void loadClassFromComponent(Component component) throws NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, ClassNotFoundException, InstantiationException, NotFoundException, CannotCompileException {
+        this.component = component;
+        
         URL myJarFile = component.getJarFile();
-LOGGER.info(myJarFile);
-        URLClassLoader sysLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
+        LOGGER.info(myJarFile);
+        ClassPool pool = ClassPool.getDefault();
+        pool.insertClassPath(component.getFile().getAbsolutePath() + "");
 
-        Class sysClass = URLClassLoader.class;
-        Method sysMethod = sysClass.getDeclaredMethod("addURL",
-                new Class[]{
-                    URL.class
-                }
-        );
-        sysMethod.setAccessible(true);
-        sysMethod.invoke(sysLoader, new Object[]{myJarFile});
-
-        for (Object object : component.getControllerClassMapper().keySet()) {
-
-            Class classFromName = sysLoader.loadClass(object + "");
-                     
-            
-            
-            for (Annotation annotation : classFromName.getAnnotations()) {
-                LOGGER.info(annotation);
-            }
-
-            Annotation[] isController = classFromName.getDeclaredAnnotationsByType(Controller.class);
-            //  boolean isEntity = classFromName.isAnnotationPresent(Entity.class);
-            LOGGER.info(Arrays.toString(isController));
-            LOGGER.info(classFromName);
-            if (false) {
-                Method[] methods = classFromName.getMethods();
-                /**
-                 * Get method
-                 */
-                for (Method method : methods) {
-                    LOGGER.info(method);
-                    boolean isRequestHandler = method.isAnnotationPresent(
-                            RequestMapping.class);
-                    if (isRequestHandler) {
-                        LOGGER.info(method.getDeclaringClass());
-                    }
-                }
-
-            }
-
-//            else if (isEntity) {
-//                component.setEntity(classFromName);
-//            }
+        // pool.
+        for (String classPath : component.getControllerClassMapper().keySet()) {
+            LOGGER.info(classPath);
+            CtClass classLoaded = pool.get(classPath);
+            processAnnotations(classLoaded);
         }
 
+    }
+
+    private void processAnnotations(CtClass classFromName) throws ClassNotFoundException, CannotCompileException {
+        ClassPool pool = ClassPool.getDefault();
+        Class<?> classFormOriginal = pool.toClass(classFromName);
+
+        Object controllerAnnotation = classFromName.getAnnotation(Controller.class);
+        LOGGER.info(controllerAnnotation);
+
+        if (controllerAnnotation != null) {
+
+            for (CtMethod ctMethod : classFromName.getMethods()) {
+                RequestMapping annotation = (RequestMapping) ctMethod.getAnnotation(RequestMapping.class);
+                if (annotation != null) {
+                    LOGGER.info(annotation.path());
+                    map.put(annotation.path(), new RequestResolver(ctMethod, classFormOriginal, this));
+                }
+            }
+
+        }
+
+    }
+
+    /**
+     *
+     *
+     *
+     * @param requestPath
+     * @return
+     */
+    public RequestResolver resolve(String requestPath) {
+        return map.get("/" + requestPath);
+    }
+
+    @Override
+    public String resorcePath(String name) {
+        LOGGER.info("87 " + name);
+
+        name = "components/" + component.getComponentBasePath() + "/webapp/" + name + ".html";
+        return name;
     }
 
 }

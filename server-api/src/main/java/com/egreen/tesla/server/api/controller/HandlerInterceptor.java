@@ -7,9 +7,11 @@ package com.egreen.tesla.server.api.controller;
 
 import com.egreen.tesla.server.api.component.Component;
 import com.egreen.tesla.server.api.component.ComponentManager;
+import com.egreen.tesla.server.api.config.resolver.RequestResolver;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.StringTokenizer;
-import javax.servlet.RequestDispatcher;
+import javassist.CannotCompileException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,11 +32,11 @@ public class HandlerInterceptor {
     private String componentPath;
     private String requestPath;
 
-    public void process(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    public void process(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, ClassNotFoundException, CannotCompileException, InstantiationException, IllegalAccessException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException {
 
         StringTokenizer st = new StringTokenizer(request.getPathInfo(), "/");
 
-       // LOGGER.info(st.nextToken());//remove ts-api);
+        // LOGGER.info(st.nextToken());//remove ts-api);
         ComponentManager componentManager = (ComponentManager) request.getServletContext().getAttribute("component_manager");
         if (st.hasMoreTokens()) {
             componentPath = st.nextToken();
@@ -47,10 +49,16 @@ public class HandlerInterceptor {
         }
         LOGGER.info(requestPath);
         if (componentPath != null) {
-            Component component = componentManager.getComponent(componentPath+"".trim());
+            Component component = componentManager.getComponent(componentPath + "".trim());
             LOGGER.info("load component for handle request " + component);
             if (component != null) {
-                component.loadRequestController(requestPath);
+                //Controller Process Request
+                RequestResolver loadRequestController = component.loadRequestController(requestPath);
+
+                LOGGER.info(loadRequestController);
+                if (loadRequestController != null) {
+                    loadRequestController.processRequest(request, response);
+                }
             } else {
                 response.getWriter().print("Invalid Request");
             }

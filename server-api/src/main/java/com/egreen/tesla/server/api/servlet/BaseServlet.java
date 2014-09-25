@@ -7,7 +7,9 @@ package com.egreen.tesla.server.api.servlet;
 
 import com.egreen.tesla.server.api.controller.HandlerInterceptor;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
+import javassist.CannotCompileException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -39,6 +41,20 @@ public class BaseServlet extends HttpServlet {
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(BaseServlet.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ServletException ex) {
+            java.util.logging.Logger.getLogger(BaseServlet.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(BaseServlet.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (CannotCompileException ex) {
+            java.util.logging.Logger.getLogger(BaseServlet.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(BaseServlet.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(BaseServlet.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NoSuchMethodException ex) {
+            java.util.logging.Logger.getLogger(BaseServlet.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalArgumentException ex) {
+            java.util.logging.Logger.getLogger(BaseServlet.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InvocationTargetException ex) {
             java.util.logging.Logger.getLogger(BaseServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
         

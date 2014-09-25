@@ -6,11 +6,8 @@ and open the template in the editor.
 -->
 
 
-<root>
-    
+<root>    
     <component>
         <id>com.name.example.one</id>
-    </component>
-    
-    
+    </component>   
 </root>

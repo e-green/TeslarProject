@@ -6,6 +6,7 @@
 package com.egreen.tesla.server.api.component;
 
 import com.egreen.tesla.server.api.config.resolver.ControllerResolver;
+import com.egreen.tesla.server.api.config.resolver.RequestResolver;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -25,6 +26,8 @@ import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
+import javassist.CannotCompileException;
+import javassist.NotFoundException;
 import javax.servlet.ServletContext;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
@@ -67,11 +70,16 @@ public class Component {
     //
     private final ControllerResolver controllerResolver = new ControllerResolver();
 
-    public Component(File name, ServletContext context) throws MalformedURLException, IOException, FileNotFoundException, ConfigurationException, NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, ClassNotFoundException, InstantiationException {
+    public Component(File name, ServletContext context) throws MalformedURLException, IOException, FileNotFoundException, ConfigurationException, NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, ClassNotFoundException, InstantiationException, NotFoundException, CannotCompileException {
         this.file = name;
         this.context = context;
         init();
-        controllerResolver.loadClassFromComponent(this);
+
+        try {
+            controllerResolver.loadClassFromComponent(this);
+        } catch (Exception e) {
+            LOGGER.error(e);
+        }
     }
 
     public void setAllEntrys(List<JarEntry> allEntrys) {
@@ -113,15 +121,13 @@ public class Component {
     }
 
     private void init() throws FileNotFoundException, IOException, ConfigurationException {
-        
+
         //Init url
         this.jarFile = new URL("jar", "", "file:" + file.getAbsolutePath() + "!/");
-        
-        
+
         final FileInputStream fileInputStream = new FileInputStream(file);
         JarInputStream jarFile = new JarInputStream(fileInputStream);
         JarFile jf = new JarFile(file);
-
 
         setConfiguraton(jf);//Configuration load
 
@@ -137,6 +143,7 @@ public class Component {
             if (jarEntry.getName().endsWith(".class") && !jarEntry.getName().contains("$")) {
                 final String JarNameClass = jarEntry.getName().replaceAll("/", "\\.");
                 String className = JarNameClass.replace(".class", "");
+                LOGGER.info(className);
                 controllerClassMapper.put(className, className);
 
             } else if (jarEntry.getName().startsWith("webapp")) {
@@ -145,7 +152,6 @@ public class Component {
                 saveEntry(jf.getInputStream(jarEntry), JarNameClass);
             }
         }
-
     }
 
     /**
@@ -269,8 +275,16 @@ public class Component {
         return allEntrys;
     }
 
-    public void loadRequestController(String requestPath) {
-
+    /**
+     *
+     *
+     *
+     * @param requestPath
+     * @return
+     */
+    public RequestResolver loadRequestController(String requestPath) {
+        LOGGER.info(requestPath);
+        return controllerResolver.resolve(requestPath);
     }
 
     /**

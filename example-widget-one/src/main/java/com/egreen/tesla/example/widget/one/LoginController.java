@@ -5,8 +5,11 @@
  */
 package com.egreen.tesla.example.widget.one;
 
+import com.egreen.tesla.example.widget.one.entity.User;
 import com.egreen.tesla.widget.api.config.Controller;
+import com.egreen.tesla.widget.api.config.Param;
 import com.egreen.tesla.widget.api.config.RequestMapping;
+import com.egreen.tesla.widget.api.config.ResponseBody;
 
 /**
  *
@@ -18,6 +21,12 @@ public class LoginController {
     @RequestMapping(path = "/login")
     public String loginView() {
         return "login";
+    }
+
+    @RequestMapping(path = "/user")
+    @ResponseBody
+    public User getUser(@Param("userid") String userid) {
+        return new User(userid, "asdas", "asdas");
     }
 
 }

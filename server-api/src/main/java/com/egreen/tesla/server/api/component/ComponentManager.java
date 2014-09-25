@@ -13,6 +13,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
+import javassist.CannotCompileException;
+import javassist.NotFoundException;
 import javax.servlet.ServletContext;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.logging.log4j.LogManager;
@@ -62,7 +64,7 @@ public class ComponentManager {
      * @throws java.net.MalformedURLException
      * @throws org.apache.commons.configuration.ConfigurationException
      */
-    public Map<String, Component> loadComponents(String componentPath, final ServletContext context) throws FileNotFoundException, IOException, NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, ClassNotFoundException, MalformedURLException, ConfigurationException, InstantiationException {
+    public Map<String, Component> loadComponents(String componentPath, final ServletContext context) throws FileNotFoundException, IOException, NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, ClassNotFoundException, MalformedURLException, ConfigurationException, InstantiationException, NotFoundException, CannotCompileException {
         LOGGER.info(context);
 
         File componentsLocation = new File(componentPath);
@@ -80,22 +82,6 @@ public class ComponentManager {
         return COMPONENT_MAP;
     }
 
-//    /**
-//     *
-//     * @param file
-//     * @return
-//     * @throws FileNotFoundException
-//     * @throws IOException
-//     * @throws NoSuchMethodException
-//     * @throws IllegalAccessException
-//     * @throws InvocationTargetException
-//     * @throws ClassNotFoundException
-//     */
-//    private static final Component buildComponent(File file) throws FileNotFoundException, IOException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, ClassNotFoundException {
-//        Component component = new Component(file.get);
-//     component.init(file);
-//        return component;
-//    }
     /**
      *
      * Access Loaded Components
@@ -107,22 +93,9 @@ public class ComponentManager {
         return COMPONENT_MAP;
     }
 
-    /**
-     *
-     * @param path
-     * @return
-     */
-    public Class<?> getRequestClass(String path) {
-        return null;
-    }
+   
 
     public Component getComponent(String componentPath) {
-//        for (String string : COMPONENT_MAP.keySet()) {
-//            LOGGER.info("121 "+string);
-//            LOGGER.info("122 "+string+"".equals(componentPath));
-//            LOGGER.info("122 "+string+"".length()+" "+(componentPath)+"".length());
-//        }
-//        
 //        
         return COMPONENT_MAP.get(componentPath);
 

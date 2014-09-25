@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.util.logging.Level;
+import javassist.CannotCompileException;
+import javassist.NotFoundException;
 import javax.servlet.ServletContext;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
@@ -56,10 +58,14 @@ public class ComponentContextLoader {
             java.util.logging.Logger.getLogger(ComponentContextLoader.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
             java.util.logging.Logger.getLogger(ComponentContextLoader.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NotFoundException ex) {
+            java.util.logging.Logger.getLogger(ComponentContextLoader.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (CannotCompileException ex) {
+            java.util.logging.Logger.getLogger(ComponentContextLoader.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    private void create() throws ConfigurationException, IOException, FileNotFoundException, NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, ClassNotFoundException, MalformedURLException, InstantiationException {
+    private void create() throws ConfigurationException, IOException, FileNotFoundException, NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, ClassNotFoundException, MalformedURLException, InstantiationException, NotFoundException, CannotCompileException {
         String path = (String) context.getInitParameter(CONTEXT_CONFIG_LOCATION);
         XMLConfiguration configuration = new XMLConfiguration(realPath + path);
         String appName = configuration.getString("server.name");
