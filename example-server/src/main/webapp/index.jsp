@@ -11,14 +11,17 @@
         <h1>Hello World!</h1>
         <%
             out.print(getServletContext().getAttribute("name"));
-            String myVariable = "./"+request.getAttribute("viewpath") + "";
-           
-            asda sdasd asd
+            String myVariable =request.getAttribute("viewpath")+"";
             out.print(myVariable);
         %>
 
-        <% if (myVariable != null || !myVariable.isEmpty()) {%>
-        <jsp:include page="<%= myVariable %>" flush="true" />
+        <% if (myVariable != null && !myVariable.isEmpty()) {
+            //   myVariable = "./" +myVariable;  <jsp:include page="<%= myVariable
+        %>
+      
         <%}%>
+
+
+
     </body>
 </html>

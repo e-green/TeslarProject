@@ -11,7 +11,13 @@ and open the template in the editor.
         <name>My One</name>  
         <component>
             <base-path>/component_jars</base-path>
-        </component>    
+        </component>   
+        <database>
+            <url>jdbc:mysql://localhost/</url>
+            <username>root</username>
+            <password>123</password>
+            <name>myone_test_db</name>
+        </database> 
     </server>   
 
 </Manifiest>

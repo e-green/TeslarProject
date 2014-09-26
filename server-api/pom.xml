@@ -63,6 +63,27 @@
 
         
         
+        <!-- Database Configurations -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.27</version>
+        </dependency>
+<!--    ########Inherited from widget-api######
+    <dependency>
+            <groupId>javax.persistence</groupId>
+            <artifactId>persistence-api</artifactId>
+            <version>1.0b</version>
+            <type>jar</type>
+        </dependency>
+       
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>4.2.2.Final</version>
+            <type>jar</type>
+        </dependency>-->
+        
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>widget-api</artifactId>

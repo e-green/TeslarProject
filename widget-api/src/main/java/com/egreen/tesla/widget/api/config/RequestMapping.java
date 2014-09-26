@@ -5,7 +5,7 @@
  */
 package com.egreen.tesla.widget.api.config;
 
-import com.egreen.tesla.widget.api.handler.RequestType;
+import com.egreen.tesla.widget.api.config.type.RequestType;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

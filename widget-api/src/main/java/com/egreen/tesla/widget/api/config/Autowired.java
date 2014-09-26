@@ -15,9 +15,6 @@ import java.lang.annotation.Target;
  * @author dewmal
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
-public @interface Controller {
-
-    String path() default "";
-
+@Target({ElementType.FIELD})
+public @interface Autowired {
 }

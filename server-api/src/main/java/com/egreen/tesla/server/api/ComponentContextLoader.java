@@ -6,11 +6,14 @@
 package com.egreen.tesla.server.api;
 
 import com.egreen.tesla.server.api.component.ComponentManager;
+import com.egreen.tesla.server.api.configuration.Configurations;
+import com.egreen.tesla.server.api.database.DataBaseRepositaryManager;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
+import java.sql.SQLException;
 import java.util.logging.Level;
 import javassist.CannotCompileException;
 import javassist.NotFoundException;
@@ -19,6 +22,7 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.hibernate.SessionFactory;
 
 /**
  *
@@ -35,6 +39,9 @@ public class ComponentContextLoader {
     private final String realPath;
 
     private File componentsLocation;
+
+    private Configurations configuration;
+    private XMLConfiguration xmlAppConfiguration;
 
     public ComponentContextLoader(ServletContext context) {
         this.context = context;
@@ -62,22 +69,33 @@ public class ComponentContextLoader {
             java.util.logging.Logger.getLogger(ComponentContextLoader.class.getName()).log(Level.SEVERE, null, ex);
         } catch (CannotCompileException ex) {
             java.util.logging.Logger.getLogger(ComponentContextLoader.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            java.util.logging.Logger.getLogger(ComponentContextLoader.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    private void create() throws ConfigurationException, IOException, FileNotFoundException, NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, ClassNotFoundException, MalformedURLException, InstantiationException, NotFoundException, CannotCompileException {
+    private void create() throws ConfigurationException, IOException, FileNotFoundException, NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, ClassNotFoundException, MalformedURLException, InstantiationException, NotFoundException, CannotCompileException, SQLException {
         String path = (String) context.getInitParameter(CONTEXT_CONFIG_LOCATION);
-        XMLConfiguration configuration = new XMLConfiguration(realPath + path);
-        String appName = configuration.getString("server.name");
+
+        xmlAppConfiguration = new XMLConfiguration(realPath + path);
+        configuration = new Configurations(xmlAppConfiguration);
+        context.setAttribute("configuration", configuration);
+
+        String appName = xmlAppConfiguration.getString("server.name");
         LOGGER.info(appName);
         context.setAttribute("name", appName);
         String componentPath = realPath
-                + configuration.getString("server.component.base-path", "/component");
+                + xmlAppConfiguration.getString("server.component.base-path", "/component");
         LOGGER.info(componentPath);
 
         ComponentManager instance = ComponentManager.getInstance();
         instance.loadComponents(componentPath, context);
+        DataBaseRepositaryManager dataBaseRepositaryManager = DataBaseRepositaryManager.getINSTANCE();
+        dataBaseRepositaryManager.init(configuration.getDBSettings());
+        dataBaseRepositaryManager.addEntities(instance.getEntities());
+        SessionFactory sessionFactory = dataBaseRepositaryManager.buildRepo();
 
+        context.setAttribute(sessionFactory.getClass().getName(), sessionFactory);
         context.setAttribute("component_manager", instance);
 
     }

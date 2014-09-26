@@ -3,23 +3,23 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.egreen.tesla.widget.api.handler;
+package com.egreen.tesla.widget.api.config.type;
 
 /**
  *
  * @author dewmal
  */
-public enum RequestType {
+public enum ScopeType {
 
-    GET("GET"), POST("POST"), PUT("PUT"), DELETE("DELETE");
+    APPLICATION(99), SESSION(999), REQUEST(9999);
 
-    private final String type;
+    private final long type;
 
-    RequestType(String type) {
+    ScopeType(long type) {
         this.type = type;
     }
 
-    public String getType() {
+    public long getType() {
         return type;
     }
 

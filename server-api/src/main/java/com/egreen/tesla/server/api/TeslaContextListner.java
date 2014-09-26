@@ -5,9 +5,11 @@
  */
 package com.egreen.tesla.server.api;
 
+import com.egreen.tesla.server.api.scopecontroller.SessionCreateListner;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import javax.servlet.SessionTrackingMode;
 
 /**
  *
@@ -23,7 +25,9 @@ public class TeslaContextListner implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         ServletContext servletContext = sce.getServletContext();        
-        componentContextLoader=new ComponentContextLoader(servletContext);     
+        componentContextLoader=new ComponentContextLoader(servletContext); 
+        SessionCreateListner sessionCreateListner=new SessionCreateListner(componentContextLoader);
+      
     }
 
     @Override

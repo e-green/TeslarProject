@@ -5,6 +5,7 @@
  */
 package com.egreen.tesla.widget.api.config;
 
+import com.egreen.tesla.widget.api.config.type.ScopeType;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -16,8 +17,6 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
-public @interface Controller {
-
-    String path() default "";
-
+public @interface Bean {
+    ScopeType scope() default ScopeType.REQUEST;
 }

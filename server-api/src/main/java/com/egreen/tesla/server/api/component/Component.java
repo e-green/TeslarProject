@@ -6,6 +6,7 @@
 package com.egreen.tesla.server.api.component;
 
 import com.egreen.tesla.server.api.config.resolver.ControllerResolver;
+import com.egreen.tesla.server.api.config.resolver.DataBaseResolver;
 import com.egreen.tesla.server.api.config.resolver.RequestResolver;
 import java.io.File;
 import java.io.FileInputStream;
@@ -70,6 +71,8 @@ public class Component {
     //
     private final ControllerResolver controllerResolver = new ControllerResolver();
 
+    private final DataBaseResolver dataBaseResolver = new DataBaseResolver();
+
     public Component(File name, ServletContext context) throws MalformedURLException, IOException, FileNotFoundException, ConfigurationException, NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, ClassNotFoundException, InstantiationException, NotFoundException, CannotCompileException {
         this.file = name;
         this.context = context;
@@ -77,6 +80,7 @@ public class Component {
 
         try {
             controllerResolver.loadClassFromComponent(this);
+            dataBaseResolver.loadClassFromComponent(this);
         } catch (Exception e) {
             LOGGER.error(e);
         }
@@ -285,6 +289,10 @@ public class Component {
     public RequestResolver loadRequestController(String requestPath) {
         LOGGER.info(requestPath);
         return controllerResolver.resolve(requestPath);
+    }
+
+    public List<? extends Class> getEntities() {
+        return dataBaseResolver.getEntityList();
     }
 
     /**

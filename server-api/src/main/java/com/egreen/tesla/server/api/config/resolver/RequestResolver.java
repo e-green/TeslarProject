@@ -5,6 +5,7 @@
  */
 package com.egreen.tesla.server.api.config.resolver;
 
+import com.egreen.tesla.widget.api.config.Autowired;
 import com.egreen.tesla.widget.api.config.Param;
 import com.egreen.tesla.widget.api.config.RequestMapping;
 import com.egreen.tesla.widget.api.config.ResponseBody;
@@ -12,10 +13,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.Map;
 import javassist.CannotCompileException;
 import javassist.CtMethod;
 import javax.servlet.ServletException;
@@ -23,6 +24,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 
 /**
  *
@@ -57,6 +60,20 @@ public class RequestResolver {
         }
 
         Object newInstance = ctClass.newInstance();
+
+        Field[] fields = ctClass.getFields();
+        for (Field field : fields) {
+            Autowired autowired = field.getAnnotation(Autowired.class);
+            if (autowired != null) {
+
+                if (field.getType().isAssignableFrom(Session.class)) {
+
+                    SessionFactory factory = (SessionFactory) request.getAttribute(SessionFactory.class.getName());
+                    field.set(newInstance,factory.openSession());
+                }
+
+            }
+        }
 
         Method method = null;
 

@@ -5,13 +5,16 @@
  */
 package com.egreen.tesla.server.api.component;
 
+import com.egreen.tesla.server.api.database.DataBaseRepositaryManager;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javassist.CannotCompileException;
 import javassist.NotFoundException;
@@ -35,6 +38,11 @@ public class ComponentManager {
      *
      */
     private final Map<String, Component> COMPONENT_MAP = new HashMap<String, Component>();
+
+    /**
+     * Load all entities
+     */
+    private final List<Class> entities = new ArrayList<Class>();
 
     private static ComponentManager INSTANCE;
 
@@ -77,6 +85,9 @@ public class ComponentManager {
         });
         for (File file : locations) {
             Component component = new Component(file, context);
+
+            entities.addAll(component.getEntities());
+
             COMPONENT_MAP.put(component.getComponentBasePath(), component);
         }
         return COMPONENT_MAP;
@@ -93,12 +104,12 @@ public class ComponentManager {
         return COMPONENT_MAP;
     }
 
-   
-
     public Component getComponent(String componentPath) {
-//        
         return COMPONENT_MAP.get(componentPath);
+    }
 
+    public List<Class> getEntities() {
+        return entities;
     }
 
 }
