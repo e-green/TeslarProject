@@ -5,8 +5,6 @@
  */
 package com.egreen.tesla.server.api.config.resolver;
 
-import com.egreen.tesla.server.api.database.DataBaseRepositaryManager;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import javassist.CannotCompileException;

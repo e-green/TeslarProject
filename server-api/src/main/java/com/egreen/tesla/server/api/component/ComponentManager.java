@@ -5,7 +5,6 @@
  */
 package com.egreen.tesla.server.api.component;
 
-import com.egreen.tesla.server.api.database.DataBaseRepositaryManager;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
@@ -85,10 +84,9 @@ public class ComponentManager {
         });
         for (File file : locations) {
             Component component = new Component(file, context);
-
             entities.addAll(component.getEntities());
-
             COMPONENT_MAP.put(component.getComponentBasePath(), component);
+            
         }
         return COMPONENT_MAP;
     }

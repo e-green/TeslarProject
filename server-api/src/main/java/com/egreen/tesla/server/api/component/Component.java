@@ -8,6 +8,7 @@ package com.egreen.tesla.server.api.component;
 import com.egreen.tesla.server.api.config.resolver.ControllerResolver;
 import com.egreen.tesla.server.api.config.resolver.DataBaseResolver;
 import com.egreen.tesla.server.api.config.resolver.RequestResolver;
+import com.egreen.tesla.server.api.config.resolver.ServiceResolver;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -50,8 +51,6 @@ public class Component {
 
     private Map<String, String> controllerClassMapper = new Hashtable<String, String>();
 
-    private Map<String, String> htmlFileMapper = new Hashtable<String, String>();
-
     private final File file;
 
     private URL jarFile;
@@ -73,14 +72,16 @@ public class Component {
 
     private final DataBaseResolver dataBaseResolver = new DataBaseResolver();
 
+    private final ServiceResolver serviceResolver = new ServiceResolver();
+
     public Component(File name, ServletContext context) throws MalformedURLException, IOException, FileNotFoundException, ConfigurationException, NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, ClassNotFoundException, InstantiationException, NotFoundException, CannotCompileException {
         this.file = name;
         this.context = context;
         init();
-
         try {
             controllerResolver.loadClassFromComponent(this);
             dataBaseResolver.loadClassFromComponent(this);
+            serviceResolver.loadClassFromComponent(this);
         } catch (Exception e) {
             LOGGER.error(e);
         }
@@ -247,10 +248,6 @@ public class Component {
         return controllerClassMapper;
     }
 
-    public Map<String, String> getHtmlFileMapper() {
-        return htmlFileMapper;
-    }
-
     public File getFile() {
         return file;
     }
@@ -278,6 +275,12 @@ public class Component {
     public List<JarEntry> getAllEntrys() {
         return allEntrys;
     }
+
+    public ServiceResolver getServiceResolver() {
+        return serviceResolver;
+    }
+    
+    
 
     /**
      *

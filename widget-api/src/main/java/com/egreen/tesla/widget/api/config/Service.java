@@ -15,10 +15,9 @@ import java.lang.annotation.Target;
  * @author dewmal
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD})
-public @interface Autowired {
+@Target({ElementType.TYPE})
+public @interface Service {
 
-    String service() default "";
+    String name();
 
-    String component() default "";
 }

@@ -6,6 +6,7 @@
 package com.egreen.tesla.server.api;
 
 import com.egreen.tesla.server.api.component.ComponentManager;
+import com.egreen.tesla.server.api.component.ServicePool;
 import com.egreen.tesla.server.api.configuration.Configurations;
 import com.egreen.tesla.server.api.database.DataBaseRepositaryManager;
 import java.io.File;
@@ -49,27 +50,7 @@ public class ComponentContextLoader {
         this.context.setAttribute("realpath", realPath);
         try {
             create();///init context
-        } catch (ConfigurationException ex) {
-            java.util.logging.Logger.getLogger(ComponentContextLoader.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            java.util.logging.Logger.getLogger(ComponentContextLoader.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NoSuchMethodException ex) {
-            java.util.logging.Logger.getLogger(ComponentContextLoader.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ComponentContextLoader.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IllegalArgumentException ex) {
-            java.util.logging.Logger.getLogger(ComponentContextLoader.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InvocationTargetException ex) {
-            java.util.logging.Logger.getLogger(ComponentContextLoader.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ComponentContextLoader.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ComponentContextLoader.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NotFoundException ex) {
-            java.util.logging.Logger.getLogger(ComponentContextLoader.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (CannotCompileException ex) {
-            java.util.logging.Logger.getLogger(ComponentContextLoader.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SQLException ex) {
+        } catch (ConfigurationException | IOException | NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | ClassNotFoundException | InstantiationException | NotFoundException | CannotCompileException | SQLException ex) {
             java.util.logging.Logger.getLogger(ComponentContextLoader.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -95,7 +76,8 @@ public class ComponentContextLoader {
         dataBaseRepositaryManager.addEntities(instance.getEntities());
         SessionFactory sessionFactory = dataBaseRepositaryManager.buildRepo();
 
-        context.setAttribute(sessionFactory.getClass().getName(), sessionFactory);
+        context.setAttribute(ServicePool.class.getName(), new ServicePool(instance));
+        context.setAttribute(SessionFactory.class.getName(), sessionFactory);
         context.setAttribute("component_manager", instance);
 
     }

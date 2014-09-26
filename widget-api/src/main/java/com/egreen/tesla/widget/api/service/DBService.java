@@ -5,14 +5,14 @@
  */
 package com.egreen.tesla.widget.api.service;
 
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.springframework.stereotype.Component;
+import org.hibernate.Transaction;
 
 /**
  *
  * @author dewmal
  */
-@Component
 public class DBService {
 
     private SessionFactory sessionFactory;
@@ -23,6 +23,31 @@ public class DBService {
 
     public SessionFactory getSessionFactory() {
         return sessionFactory;
+    }
+
+    /**
+     * Get Session
+     *
+     * @return
+     */
+    public Session getSession() {
+        Session session = sessionFactory.getCurrentSession();
+        if (session == null || !session.isOpen()) {
+            session = sessionFactory.openSession();
+        }
+        return session;
+    }
+
+    public void execute(DbExecuter runnable) {
+        Session openSession = getSessionFactory().openSession();
+        Transaction transaction = openSession.beginTransaction();
+        runnable.execute(openSession);
+        transaction.commit();
+    }
+
+    public interface DbExecuter {
+
+        void execute(Session session);
     }
 
 }
