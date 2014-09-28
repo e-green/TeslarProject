@@ -16,7 +16,7 @@ and open the template in the editor.
             <url>jdbc:mysql://localhost/</url>
             <username>root</username>
             <password>123</password>
-            <name>myone_test_db</name>
+            <name>myone_test_db4</name>
         </database> 
     </server>   
 

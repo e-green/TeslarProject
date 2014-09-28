@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.egreen.tesla.example.widget.two.entity;
 
 import javax.persistence.Entity;
@@ -15,10 +14,9 @@ import javax.persistence.Id;
  */
 @Entity
 public class Post {
+
     @Id
     private Long id;
-    
-    
 
     public Long getId() {
         return id;
@@ -27,5 +25,5 @@ public class Post {
     public void setId(Long id) {
         this.id = id;
     }
-    
+
 }

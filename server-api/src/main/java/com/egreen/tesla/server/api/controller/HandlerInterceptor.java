@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.StringTokenizer;
 import javassist.CannotCompileException;
+import javassist.NotFoundException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -34,7 +35,7 @@ public class HandlerInterceptor {
     private String componentPath;
     private String requestPath;
 
-    public void process(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, ClassNotFoundException, CannotCompileException, InstantiationException, IllegalAccessException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException {
+    public void process(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, ClassNotFoundException, CannotCompileException, InstantiationException, IllegalAccessException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException, SecurityException, NotFoundException {
         StringTokenizer st = new StringTokenizer(request.getPathInfo(), "/");
         // LOGGER.info(st.nextToken());//remove ts-api);
         ComponentManager componentManager = (ComponentManager) request.getServletContext().getAttribute("component_manager");

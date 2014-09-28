@@ -54,13 +54,13 @@ public class ControllerResolver extends ClassResolver implements TemplateResolve
      * @return
      */
     public RequestResolver resolve(String requestPath) {
+        LOGGER.info(requestPath);
         return map.get("/" + requestPath);
     }
 
     @Override
     public String resorcePath(String name) {
         LOGGER.info("87 " + name);
-
         name = "components/" + component.getComponentID() + "/webapp/" + name + ".html";
         return name;
     }

@@ -5,40 +5,40 @@
  */
 package com.egreen.tesla.example.widget.one;
 
+import com.egreen.tesla.example.widget.one.entity.User;
 import com.egreen.tesla.widget.api.config.Autowired;
 import com.egreen.tesla.widget.api.config.Service;
 import com.egreen.tesla.widget.api.service.DBService;
-import com.egreen.tesla.widget.api.service.Executor;
-import com.egreen.tesla.widget.api.service.ServiceBuilder;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 /**
  *
  * @author dewmal
  */
 @Service(name = "UserService")
-public class UserService extends ServiceBuilder {
+public class UserService {
 
     @Autowired
     private DBService bService;
 
-    @Override
-    protected void initExecutors() {
-        addExecutor("get", new Executor() {
-            @Override
-            public Object execute(Object... params) {
-                Session session = bService.getSession();
-                return new UserController(session).getUser((Long) params[0]);
-            }
-        });
+    public UserService() {
+    }
 
-        addExecutor("find", new Executor() {
-            @Override
-            public Object execute(Object... params) {
-                Session session = bService.getSession();
-                return new UserController(session).findUser((String) params[0]);
-            }
-        });
+    public User getUser(Long id) {
+        User userFind = null;
+        Session session = bService.getSession();
+        Transaction transaction = session.getTransaction();
+        transaction.begin();
+
+        userFind=(User) session.get(User.class, id);
+
+        transaction.commit();
+        return userFind;
+    }
+
+    public void find(String username) {
+
     }
 
 }

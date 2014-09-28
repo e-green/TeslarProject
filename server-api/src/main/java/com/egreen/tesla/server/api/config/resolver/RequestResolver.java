@@ -5,12 +5,9 @@
  */
 package com.egreen.tesla.server.api.config.resolver;
 
-import com.egreen.tesla.widget.api.config.Autowired;
 import com.egreen.tesla.widget.api.config.Param;
 import com.egreen.tesla.widget.api.config.RequestMapping;
 import com.egreen.tesla.widget.api.config.ResponseBody;
-import com.egreen.tesla.widget.api.service.DBService;
-import com.egreen.tesla.widget.api.service.ServiceBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import java.io.IOException;
@@ -21,12 +18,12 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import javassist.CannotCompileException;
 import javassist.CtMethod;
+import javassist.NotFoundException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hibernate.SessionFactory;
 
 /**
  *
@@ -53,20 +50,21 @@ public class RequestResolver {
             CannotCompileException, InstantiationException,
             IllegalAccessException, NoSuchMethodException,
             IllegalArgumentException, InvocationTargetException,
-            IOException, ServletException {
+            IOException, ServletException, SecurityException, NotFoundException {
         boolean noError = true;
         if (requestMapping == null) {
             requestMapping = (RequestMapping) ctMethod.getAnnotation(RequestMapping.class);
         }
-        Object newInstance = ctClass.newInstance();
 
+        ObjectResolver objectResolver = ObjectResolver.getInstance(request, response);
+        Object newInstance = objectResolver.getInstance(ctClass);
 
-        Field[] fields = ctClass.getDeclaredFields();
-        for (Field field : fields) {
-            Autowired autowired = field.getAnnotation(Autowired.class);
-            if (autowired != null) {
-                feildAssigner(field, newInstance, request, response);
-            }
+        LOGGER.info("Object Class " + newInstance);
+        Field[] fields1 = ctClass.getDeclaredFields();
+        for (Field field : fields1) {
+            field.setAccessible(true);
+            LOGGER.info("Retrive All Feild Has Values " + field.get(newInstance));
+
         }
 
         Method method = null;
@@ -83,6 +81,7 @@ public class RequestResolver {
                         Param param = (Param) objectInstance;
                         methodParamType[i] = param.value().getClass();
                         String parameter = request.getParameter(param.value());
+                        methodParams[i] = parameter;
                         if (parameter == null) {
                             sendErrorMessage(response, "Invalid parameter " + param.value());
                             noError = false;
@@ -100,7 +99,7 @@ public class RequestResolver {
                 method = ctClass.getMethod(ctMethod.getName(), methodParamType);
             }
             Object invoke = null;
-            LOGGER.info(method);
+            LOGGER.info("Going to Invok " + method + " On " + newInstance);
             if (methodParams == null || methodParams.length == 0) {
 
                 invoke = method.invoke(newInstance);
@@ -128,55 +127,13 @@ public class RequestResolver {
                 LOGGER.debug(response);
                 request.setAttribute("viewpath", resorcePath);
                 request.getRequestDispatcher("/").forward(request, response);
+
+               // response.sendRedirect("/");
             } else {
                 sendErrorMessage(response, "Cannot resolve Response Object");
             }
         }
 
-    }
-
-    private
-            void feildAssigner(Field field, Object newInstance, HttpServletRequest request, HttpServletResponse response) throws IllegalAccessException, IllegalArgumentException, InstantiationException, SecurityException {
-        //Service Assign
-
-        if (field.getType().isAssignableFrom(DBService.class
-        )) {
-            SessionFactory factory = (SessionFactory) request.getServletContext().getAttribute(SessionFactory.class.getName());
-
-            LOGGER.debug(
-                    "78 " + factory);
-            DBService dBService = DBService.class.newInstance();
-
-            dBService.init(factory);
-
-            field.setAccessible(
-                    true);
-            field.set(newInstance, dBService);
-
-            LOGGER.debug(
-                    "78 " + dBService);
-        } else if (field.getType().isAssignableFrom(HttpServletRequest.class
-        )) {
-            field.setAccessible(
-                    true);
-            field.set(newInstance, request);
-        } else if (field.getType().isAssignableFrom(HttpServletResponse.class
-        )) {
-            field.setAccessible(
-                    true);
-            field.set(newInstance, response);
-        } else if (field.getType().isAssignableFrom(ServiceBuilder.class
-        )) {
-            Autowired autowired = field.getAnnotation(Autowired.class);
-
-            LOGGER.info(autowired.component());
-            LOGGER.info(autowired.service());
-            LOGGER.info(field);
-
-            field.setAccessible(
-                    true);
-            field.set(newInstance, response);
-        }
     }
 
     private void sendErrorMessage(HttpServletResponse resp, String message) throws IOException {

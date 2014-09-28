@@ -31,7 +31,7 @@ public class DBService {
      * @return
      */
     public Session getSession() {
-        Session session = sessionFactory.getCurrentSession();
+        Session session = sessionFactory.openSession();
         if (session == null || !session.isOpen()) {
             session = sessionFactory.openSession();
         }

@@ -8,9 +8,6 @@ package com.egreen.tesla.server.api.config.resolver;
 import com.egreen.tesla.server.api.component.ServicePool;
 import com.egreen.tesla.widget.api.config.Autowired;
 import java.lang.reflect.Field;
-import java.util.List;
-import javassist.CtClass;
-import javassist.CtField;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,16 +25,12 @@ public class AutoWiredReslover {
         this.servicePool = servicePool;
     }
 
-    private Object initObject(Object instance) throws ClassNotFoundException {
-
+    public Object initObject(Object instance) throws ClassNotFoundException {
         Field[] fields = instance.getClass().getDeclaredFields();
-
         for (Field field : fields) {
             Autowired autowired = (Autowired) field.getAnnotation(Autowired.class);
             LOGGER.info(autowired);
-
         }
-
         return instance;
     }
 

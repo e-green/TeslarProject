@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import javassist.CannotCompileException;
+import javassist.NotFoundException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -55,6 +56,10 @@ public class BaseServlet extends HttpServlet {
         } catch (IllegalArgumentException ex) {
             java.util.logging.Logger.getLogger(BaseServlet.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InvocationTargetException ex) {
+            java.util.logging.Logger.getLogger(BaseServlet.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SecurityException ex) {
+            java.util.logging.Logger.getLogger(BaseServlet.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NotFoundException ex) {
             java.util.logging.Logger.getLogger(BaseServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
         

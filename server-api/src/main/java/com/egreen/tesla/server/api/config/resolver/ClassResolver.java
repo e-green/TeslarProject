@@ -30,13 +30,13 @@ public abstract class ClassResolver {
         this.component = component;
 
         URL myJarFile = component.getJarFile();
-        LOGGER.info(myJarFile);
+       
         ClassPool pool = ClassPool.getDefault();
         pool.insertClassPath(component.getFile().getAbsolutePath() + "");
 
         // pool.
         for (String classPath : component.getControllerClassMapper().keySet()) {
-            LOGGER.info(classPath);
+         
             CtClass classLoaded = pool.get(classPath);
             processAnnotations(classLoaded);
         }

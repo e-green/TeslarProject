@@ -5,13 +5,16 @@
  */
 package com.egreen.tesla.server.api.config.resolver;
 
+import com.egreen.tesla.server.api.component.Component;
 import com.egreen.tesla.widget.api.config.Service;
-import com.egreen.tesla.widget.api.service.ServiceBuilder;
 import java.util.Hashtable;
 import java.util.Map;
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
+import javassist.NotFoundException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -19,21 +22,25 @@ import javassist.CtClass;
  */
 public class ServiceResolver extends ClassResolver {
 
+    private static final Logger LOGGER = LogManager.getLogger(ServiceResolver.class);
+
     private Map<String, CtClass> serviceClasses = new Hashtable<>();
 
     @Override
     protected void processAnnotations(CtClass ctClass) throws Exception {
         Service service = (Service) ctClass.getAnnotation(Service.class);
-        if (service == null) {
+        if (service != null) {
+            LOGGER.info("Load Class To Service " + ctClass.getName() + " with Key " + ctClass.getSimpleName());
             serviceClasses.put(ctClass.getSimpleName(), ctClass);
         }
     }
 
-    public Object getCtClass(String name) throws CannotCompileException, InstantiationException, IllegalAccessException {
+    public Object getCtClass(String name, Component component) throws CannotCompileException, InstantiationException, IllegalAccessException, NotFoundException {
         CtClass resolveClass = serviceClasses.get(name);
         if (resolveClass != null) {
             ClassPool pool = ClassPool.getDefault();
-            Class<?> classFormOriginal = pool.toClass(resolveClass);
+            pool.insertClassPath(component.getFile().getAbsolutePath() + "");
+            Class classFormOriginal = pool.toClass(resolveClass);
             return classFormOriginal.newInstance();
         }
         return null;

@@ -7,10 +7,15 @@ package com.egreen.tesla.example.widget.two;
 
 import com.egreen.tesla.widget.api.config.Autowired;
 import com.egreen.tesla.widget.api.config.Controller;
+import com.egreen.tesla.widget.api.config.Param;
 import com.egreen.tesla.widget.api.config.RequestMapping;
 import com.egreen.tesla.widget.api.service.DBService;
-import com.egreen.tesla.widget.api.service.Executor;
 import com.egreen.tesla.widget.api.service.ServiceBuilder;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -29,11 +34,21 @@ public class PostController {
     @Autowired(component = "com.name.example.one", service = "UserService")
     private ServiceBuilder builder;
 
-    @RequestMapping(path = "/show")
-    public String postView() {
-        Executor execute = builder.execute("find");
-        Object execute1 = execute.execute("name");
-        System.out.println(execute1);
+    @RequestMapping(path = "/save")
+    public String postView(@Param("userid") String userid) {
+        Map callService;
+        try {
+            callService = builder.callService("getUser", Long.parseLong(userid));            
+        } catch (IllegalAccessException ex) {
+            Logger.getLogger(PostController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalArgumentException ex) {
+            Logger.getLogger(PostController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InvocationTargetException ex) {
+            Logger.getLogger(PostController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(PostController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
         return "post";
     }
 
