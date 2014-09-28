@@ -30,13 +30,18 @@ import org.apache.logging.log4j.Logger;
 public class HandlerInterceptor {
 
     private static final Logger LOGGER = LogManager.getLogger(HandlerInterceptor.class);
-  
-    
+
     private String componentPath;
     private String requestPath;
 
     public void process(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, ClassNotFoundException, CannotCompileException, InstantiationException, IllegalAccessException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException, SecurityException, NotFoundException {
-        StringTokenizer st = new StringTokenizer(request.getPathInfo(), "/");
+
+        String path = request.getPathInfo();
+        if (path.startsWith("teslar/")) {
+            path = path.replace("teslar/", "");
+        }
+
+        StringTokenizer st = new StringTokenizer(path, "/");
         // LOGGER.info(st.nextToken());//remove ts-api);
         ComponentManager componentManager = (ComponentManager) request.getServletContext().getAttribute("component_manager");
         if (st.hasMoreTokens()) {
@@ -60,6 +65,6 @@ public class HandlerInterceptor {
             } else {
                 response.getWriter().print("Invalid Request");
             }
-        } 
+        }
     }
 }

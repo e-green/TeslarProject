@@ -36,6 +36,49 @@ public class LoginController {
         return "login";
     }
 
+    @RequestMapping(path = "/loginaction")
+    @ResponseBody
+    public User loginAction() {
+        String name = request.getParameter("name");
+        String firstName = request.getParameter("firstName");
+        String password = request.getParameter("password");
+
+        User user = new User(name, firstName, password);
+        user.setId(Calendar.getInstance().getTimeInMillis());
+        final SessionFactory sessionFactory = dBService.getSessionFactory();
+        System.out.println(sessionFactory);
+        final Session openSession = sessionFactory.openSession();
+        System.out.println(openSession);
+        Transaction beginTransaction = openSession.beginTransaction();
+        openSession.save(user);
+        beginTransaction.commit();
+        return user;
+    }
+
+    @RequestMapping(path = "/register")
+    public String registerView() {
+        return "register";
+    }
+
+    @RequestMapping(path = "/registeraction")
+    @ResponseBody
+    public User registerAction() {
+        String name = request.getParameter("name");
+        String firstName = request.getParameter("firstName");
+        String password = request.getParameter("password");
+
+        User user = new User(name, firstName, password);
+        user.setId(Calendar.getInstance().getTimeInMillis());
+        final SessionFactory sessionFactory = dBService.getSessionFactory();
+        System.out.println(sessionFactory);
+        final Session openSession = sessionFactory.openSession();
+        System.out.println(openSession);
+        Transaction beginTransaction = openSession.beginTransaction();
+        openSession.save(user);
+        beginTransaction.commit();
+        return user;
+    }
+
     @RequestMapping(path = "/user")
     @ResponseBody
     public User getUser(@Param("userid") String userid) {

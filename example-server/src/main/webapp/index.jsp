@@ -8,10 +8,10 @@
         <title>JSP Page</title>
 
         <!-- Latest compiled and minified CSS -->
-        <link rel="stylesheet" href="./static/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/static/css/bootstrap.min.css">
 
         <!-- Optional theme -->
-        <link rel="stylesheet" href="./static/css/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="/static/css/bootstrap-theme.min.css">
 
         <!-- Latest compiled and minified JavaScript -->
         <script src="./static/js/bootstrap.min.js" type="text/javascript"></script>
@@ -41,7 +41,7 @@
             </div>
         </div>
 
-        <div class="container">
+        <div class="container" style="margin-top: 50px">
 
             <div class="starter-template">
 

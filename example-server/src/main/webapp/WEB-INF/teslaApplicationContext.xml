@@ -13,7 +13,7 @@ and open the template in the editor.
             <base-path>/component_jars</base-path>
         </component>   
         <database>
-            <url>jdbc:mysql://localhost/</url>
+            <url>jdbc:mysql://127.0.0.1/</url>
             <username>root</username>
             <password>123</password>
             <name>myone_test_db4</name>
